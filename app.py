@@ -7,8 +7,11 @@ import yaml
 import pandas as pd
 import altair as alt
 from pypdf import PdfReader
-from docx import Document  # for .docx support
-
+#from docx import Document  # for .docx support
+try:
+    from docx import Document  # provided by python-docx
+except ImportError:
+    Document = None
 # External LLM clients
 from openai import OpenAI
 import google.generativeai as genai
@@ -394,8 +397,12 @@ def extract_pdf_pages_to_text(file, start_page: int, end_page: int) -> str:
 
 
 def extract_docx_to_text(file) -> str:
-    """Extract text from a DOCX file."""
+    """Extract text from a DOCX file (if python-docx is installed)."""
+    if Document is None:
+        # Graceful fallback if python-docx is not installed
+        return ""
     try:
+        from io import BytesIO
         bio = BytesIO(file.read())
         doc = Document(bio)
         return "\n".join(p.text for p in doc.paragraphs)
