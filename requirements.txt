@@ -9,4 +9,4 @@ pypdf
 PyYAML
 altair
 httpx
-docx
+python-docx
